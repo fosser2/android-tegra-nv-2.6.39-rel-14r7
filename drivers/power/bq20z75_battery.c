@@ -84,7 +84,7 @@ static struct bq20z75_device_data {
 	[REG_TEMPERATURE]       = BQ20Z75_DATA(TEMP, 0x08, 0, 65535),
 	[REG_VOLTAGE]           = BQ20Z75_DATA(VOLTAGE_NOW, 0x09, 0, 20000),
 	[REG_CURRENT]           = BQ20Z75_DATA(CURRENT_NOW, 0x0A, -32768, 32767),
-	[REG_CAPACITY]          = BQ20Z75_DATA(CAPACITY, 0x0e, 0, 100),
+	[REG_CAPACITY]          = BQ20Z75_DATA(CAPACITY, 0x0D, 0, 100),
 	[REG_REMAINING_CAPACITY] = BQ20Z75_DATA(ENERGY_NOW, 0x0F, 0, 65535),
 	[REG_FULL_CHARGE_CAPACITY] = BQ20Z75_DATA(ENERGY_FULL, 0x10, 0, 65535),
 	[REG_TIME_TO_EMPTY]     = BQ20Z75_DATA(TIME_TO_EMPTY_AVG, 0x12, 0, 65535),
@@ -323,7 +323,8 @@ static int bq20z75_get_battery_capacity(struct i2c_client *client,
 	if (psp == POWER_SUPPLY_PROP_CAPACITY) {
 		/* bq20z75 spec says that this can be >100 %
 		* even if max value is 100 % */
-		val->intval = min(ret, 100);
+		//val->intval = min(ret, 100);
+		val->intval = (ret<10) ? 0 : (ret-10)*10/9;
 	} else
 		val->intval = ret;
 
