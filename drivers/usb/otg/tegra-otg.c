@@ -1,9 +1,4 @@
 /*
- * drivers/usb/otg/tegra-otg.c
- *
- * OTG transceiver driver for Tegra UTMI phy
- *
- * Copyright (C) 2010 NVIDIA Corp.
  * Copyright (C) 2010 Google, Inc.
  * Copyright (C) 2011 Eduardo José Tagle <ejtagle@tutopia.com>
  *
@@ -53,21 +48,21 @@
 #define  TEGRA_INTS		(TEGRA_VBUS_INT_STATUS | TEGRA_ID_INT_STATUS)
 
 struct tegra_otg_data {
-	struct otg_transceiver 	otg;
-	spinlock_t 				lock;
+	struct otg_transceiver otg;
+	unsigned long int_status;
+	spinlock_t lock;
+	void __iomem *regs;
+	struct clk *clk;
+	int irq;
 	struct wake_lock 		wake_lock;
 	unsigned long 			event;
 	bool 					host_mode;
-	void __iomem *			regs;
-	struct clk *			clk;
-	int						irq;
 	struct platform_device *pdev;
 	struct work_struct 		work;
 	unsigned int 			intr_reg_data;
 	
 };
-
-static struct tegra_otg_data *tegra_clone = NULL;
+static struct tegra_otg_data *tegra_clone;
 
 static inline unsigned long otg_readl(struct tegra_otg_data *tegra,
 				      unsigned int offset)
@@ -92,19 +87,68 @@ static const char *tegra_state_name(enum usb_otg_state state)
 	return "INVALID";
 }
 
-static void tegra_start_host(struct tegra_otg_data *tegra)
+static struct platform_device *
+tegra_usb_otg_host_register(struct platform_device *ehci_device,
+			    struct tegra_ehci_platform_data *pdata)
+{
+	struct platform_device *pdev;
+	void *platform_data;
+	int val;
+
+	pdev = platform_device_alloc(ehci_device->name, ehci_device->id);
+	if (!pdev)
+		return NULL;
+
+	val = platform_device_add_resources(pdev, ehci_device->resource,
+					    ehci_device->num_resources);
+	if (val)
+		goto error;
+
+	pdev->dev.dma_mask =  ehci_device->dev.dma_mask;
+	pdev->dev.coherent_dma_mask = ehci_device->dev.coherent_dma_mask;
+
+	platform_data = kmalloc(sizeof(struct tegra_ehci_platform_data),
+		GFP_KERNEL);
+	if (!platform_data)
+		goto error;
+
+	memcpy(platform_data, pdata, sizeof(struct tegra_ehci_platform_data));
+	pdev->dev.platform_data = platform_data;
+
+	val = platform_device_add(pdev);
+	if (val)
+		goto error_add;
+
+	return pdev;
+
+error_add:
+	kfree(platform_data);
+error:
+	pr_err("%s: failed to add the host controller device\n", __func__);
+	platform_device_put(pdev);
+	return NULL;
+}
+
+static void tegra_usb_otg_host_unregister(struct platform_device *pdev)
+{
+	kfree(pdev->dev.platform_data);
+	pdev->dev.platform_data = NULL;
+	platform_device_unregister(pdev);
+}
+
+void tegra_start_host(struct tegra_otg_data *tegra)
 {
 	struct tegra_otg_platform_data *pdata = tegra->otg.dev->platform_data;
 	if (!tegra->pdev) {
-		tegra->pdev = pdata->host_register();
+		tegra->pdev = tegra_usb_otg_host_register(pdata->ehci_device,
+							  pdata->ehci_pdata);
 	}
 }
 
 static void tegra_stop_host(struct tegra_otg_data *tegra)
 {
-	struct tegra_otg_platform_data *pdata = tegra->otg.dev->platform_data;
 	if (tegra->pdev) {
-		pdata->host_unregister(tegra->pdev);
+		tegra_usb_otg_host_unregister(tegra->pdev);
 		tegra->pdev = NULL;
 	}
 }
@@ -236,9 +280,6 @@ static void tegra_otg_work(struct work_struct *work)
 
 	}
 
-	/* Delay a bit toensure registers are updated */
-	udelay(1);
-	
 	clk_disable(tegra->clk);
 }
 
@@ -348,10 +389,6 @@ void tegra_otg_set_host_mode(bool host_mode)
 		val &= ~TEGRA_VBUS_INT_EN;			/* We can't use VBUS ints in host mode */
 		otg_writel(tegra, val, TEGRA_USB_PHY_WAKEUP_REG_OFFSET);
 		spin_unlock_irqrestore(&tegra->lock, flags);		
-		
-		/* Delay a bit toensure registers are updated */
-		udelay(1);
-
 		clk_disable(tegra->clk);
 
 		/* Schedule the switch to host mode */
@@ -371,10 +408,6 @@ void tegra_otg_set_host_mode(bool host_mode)
 		val |=  TEGRA_VBUS_INT_EN;			/* Use VBUS ints in suspend mode to wakeup */
 		otg_writel(tegra, val, TEGRA_USB_PHY_WAKEUP_REG_OFFSET);
 		spin_unlock_irqrestore(&tegra->lock, flags);		
-		
-		/* Delay a bit toensure registers are updated */
-		udelay(1);
-
 		clk_disable(tegra->clk);
 	
 		/* Leave some time for VBUS stabilization */
@@ -516,13 +549,6 @@ static int tegra_otg_probe(struct platform_device *pdev)
 
 	INIT_WORK (&tegra->work, tegra_otg_work);
 
-#ifdef CONFIG_USB_HOTPLUG
-	/* Delay a bit toensure registers are updated */
-	udelay(1);
-
-	clk_disable(tegra->clk);
-#endif
-
 	dev_info(&pdev->dev, "otg transceiver registered\n");
 	return 0;
 
@@ -587,17 +613,13 @@ static void tegra_otg_resume(struct device *dev)
 	 * It is placed here after observing system hang.
 	 * Root cause is not confirmed.
 	 */
-	msleep(100);
+	msleep(1);
 	
 	clk_enable(tegra->clk);
 	spin_lock_irqsave(&tegra->lock, flags);
 	val = otg_readl(tegra, TEGRA_USB_PHY_WAKEUP_REG_OFFSET) | tegra->intr_reg_data;
 	otg_writel(tegra, val, TEGRA_USB_PHY_WAKEUP_REG_OFFSET);
 	spin_unlock_irqrestore(&tegra->lock, flags);		
-	
-	/* Delay a bit toensure registers are updated */
-	udelay(1);
-
 	clk_disable(tegra->clk);
 	
 	/* Check if we are in device mode with something plugged to us */
@@ -633,4 +655,3 @@ static void __exit tegra_otg_exit(void)
 	platform_driver_unregister(&tegra_otg_driver);
 }
 module_exit(tegra_otg_exit);
-
