@@ -724,7 +724,8 @@ static void __init tegra_smba1002_init(void)
 	smba1002_sdhci_register_devices();	
 	
 	/* Register the USB device */
-	smba1002_usb_register_devices();
+	//smba1002_usb_register_devices();
+	smba1002_usb_init();
 #ifdef SMBA1002_GPS
 	/* Register gps powermanagement devices */
 	smba1002_gps_pm_register_devices();

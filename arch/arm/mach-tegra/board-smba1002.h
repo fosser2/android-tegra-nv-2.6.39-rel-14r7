@@ -140,7 +140,8 @@ extern void smba1002_init_emc(void);
 extern void smba1002_pinmux_init(void);
 extern void smba1002_clks_init(void);
 
-extern int smba1002_usb_register_devices(void);
+//extern int smba1002_usb_register_devices(void);
+extern int smba1002_usb_init(void);
 extern int smba1002_audio_register_devices(void);
 extern int smba1002_jack_register_devices(void);
 extern int smba1002_gpu_register_devices(void);
