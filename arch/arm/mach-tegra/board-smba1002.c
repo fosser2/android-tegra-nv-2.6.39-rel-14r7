@@ -724,8 +724,7 @@ static void __init tegra_smba1002_init(void)
 	smba1002_sdhci_register_devices();	
 	
 	/* Register the USB device */
-	//smba1002_usb_register_devices();
-	smba1002_usb_init();
+	smba1002_usb_register_devices();
 #ifdef SMBA1002_GPS
 	/* Register gps powermanagement devices */
 	smba1002_gps_pm_register_devices();
@@ -821,9 +820,3 @@ MACHINE_START(LEGACY, "legacy")
 	.reserve		= tegra_smba1002_reserve,
 	.fixup			= tegra_smba1002_fixup,
 MACHINE_END
-
-
-
-
-
-

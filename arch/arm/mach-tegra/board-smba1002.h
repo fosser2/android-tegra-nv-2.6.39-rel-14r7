@@ -1,7 +1,7 @@
 /*
  * arch/arm/mach-tegra/board-smba1002.h
  *
- * Copyright (C) 2011 Eduardo Jos� Tagle <ejtagle@tutopia.com>
+ * Copyright (C) 2011 Eduardo Jose Tagle <ejtagle@tutopia.com>
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -140,8 +140,7 @@ extern void smba1002_init_emc(void);
 extern void smba1002_pinmux_init(void);
 extern void smba1002_clks_init(void);
 
-//extern int smba1002_usb_register_devices(void);
-extern int smba1002_usb_init(void);
+extern int smba1002_usb_register_devices(void);
 extern int smba1002_audio_register_devices(void);
 extern int smba1002_jack_register_devices(void);
 extern int smba1002_gpu_register_devices(void);
@@ -176,3 +175,4 @@ extern int smba1002_camera_register_devices(void);
 #endif
 
 /*Limiting Frambuffers to Default Panel and 720p memory output.  Check board-shuttle.h for other options*/
+
