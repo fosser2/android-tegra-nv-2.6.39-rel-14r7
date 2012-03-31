@@ -393,7 +393,7 @@ static struct fixed_voltage_config ldo_tps2051B_cfg
 
 /* FIXME: do we have rtc alarm irq? */
 static struct tps6586x_rtc_platform_data smba1002_rtc_data = {
-	.irq	= TEGRA_NR_IRQS + TPS6586X_INT_RTC_ALM1,
+	.irq	= -1,
         .start = {
 		.year = 2011,
 		.month = 12,
