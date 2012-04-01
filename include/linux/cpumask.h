@@ -774,7 +774,7 @@ static inline const struct cpumask *get_cpu_mask(unsigned int cpu)
 #if NR_CPUS == 1
 #define first_cpu(src)		({ (void)(src); 0; })
 #define next_cpu(n, src)	({ (void)(src); 1; })
-#define any_online_cpu(mask)	0
+  /* #define any_online_cpu(mask)	0 */
 #define for_each_cpu_mask(cpu, mask)	\
 	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask)
 #else /* NR_CPUS > 1 */
@@ -784,7 +784,9 @@ int __any_online_cpu(const cpumask_t *mask);
 
 #define first_cpu(src)		__first_cpu(&(src))
 #define next_cpu(n, src)	__next_cpu((n), &(src))
-#define any_online_cpu(mask) __any_online_cpu(&(mask))
+/* #define any_online_cpu(mask) __any_online_cpu(&(mask)) */
+#define any_online_cpu(mask) cpumask_any_and(&mask, cpu_online_mask)
+
 #define for_each_cpu_mask(cpu, mask)			\
 	for ((cpu) = -1;				\
 		(cpu) = next_cpu((cpu), (mask)),	\

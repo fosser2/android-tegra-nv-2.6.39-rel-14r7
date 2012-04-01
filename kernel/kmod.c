@@ -42,6 +42,7 @@
 extern int max_threads;
 
 static struct workqueue_struct *khelper_wq;
+static const struct task_struct *kmod_thread_locker;
 
 #ifdef CONFIG_MODULES
 
@@ -163,6 +164,13 @@ fail:
 	do_exit(0);
 }
 
+static int call_helper(void *data)
+{
+       /* Worker thread started blocking khelper thread. */
+       kmod_thread_locker = current;
+       return ____call_usermodehelper(data);
+}
+
 void call_usermodehelper_freeinfo(struct subprocess_info *info)
 {
 	if (info->cleanup)
@@ -225,9 +233,12 @@ static void __call_usermodehelper(struct work_struct *work)
 	if (wait == UMH_WAIT_PROC)
 		pid = kernel_thread(wait_for_helper, sub_info,
 				    CLONE_FS | CLONE_FILES | SIGCHLD);
-	else
-		pid = kernel_thread(____call_usermodehelper, sub_info,
-				    CLONE_VFORK | SIGCHLD);
+        else {
+                pid = kernel_thread(call_helper, sub_info,
+                                    CLONE_VFORK | SIGCHLD);
+                /* Worker thread stopped blocking khelper thread. */
+                kmod_thread_locker = NULL;
+        }
 
 	switch (wait) {
 	case UMH_NO_WAIT:
@@ -400,7 +411,16 @@ int call_usermodehelper_exec(struct subprocess_info *sub_info,
 		retval = -EBUSY;
 		goto out;
 	}
-
+       /*
+        * Worker thread must not wait for khelper thread at below
+        * wait_for_completion() if the thread was created with CLONE_VFORK
+        * flag, for khelper thread is already waiting for the thread at
+        * wait_for_completion() in do_fork().
+        */
+        if (wait != UMH_NO_WAIT && current == kmod_thread_locker) {
+                retval = -EBUSY;
+                goto out;
+        }
 	sub_info->complete = &done;
 	sub_info->wait = wait;
 
