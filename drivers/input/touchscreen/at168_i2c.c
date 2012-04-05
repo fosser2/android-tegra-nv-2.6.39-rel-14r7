@@ -90,15 +90,15 @@ static void at168_work(struct work_struct *work)
 	input_report_key(touch->input_dev, BTN_TOUCH, (event.data.fingers == 1 || event.data.fingers == 2) );
 	input_report_key(touch->input_dev, BTN_2, event.data.fingers == 2);
 
-	/*if (!event.data.fingers || (event.data.fingers > 2))
-		goto out;*/
+	if (!event.data.fingers || (event.data.fingers > 2))
+		goto out;
 
 	for (i = 0; i < event.data.fingers; i++) {
 		input_report_abs(touch->input_dev, ABS_MT_POSITION_X,
 				 event.data.coord[i][0]);
 		input_report_abs(touch->input_dev, ABS_MT_POSITION_Y,
 				 event.data.coord[i][1]);
-		//input_report_abs(touch->input_dev, ABS_MT_TRACKING_ID, i);
+		input_report_abs(touch->input_dev, ABS_MT_TRACKING_ID, i);
 		input_report_abs(touch->input_dev, ABS_MT_TOUCH_MAJOR, 10);
 		input_report_abs(touch->input_dev, ABS_MT_WIDTH_MAJOR, 20);
 		input_mt_sync(touch->input_dev);
