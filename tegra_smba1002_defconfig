@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux/arm 2.6.39.4 Kernel Configuration
-# Tue Apr  3 21:00:11 2012
+# Thu Apr  5 23:55:26 2012
 #
 CONFIG_ARM=y
 CONFIG_HAVE_PWM=y
@@ -2532,7 +2532,9 @@ CONFIG_RTC_DRV_TPS6586X=y
 #
 # on-CPU RTC drivers
 #
-# CONFIG_RTC_DRV_TEGRA is not set
+CONFIG_RTC_DRV_TEGRA=y
+CONFIG_RTC_TEGRA2_BACKUP_RTC=y
+CONFIG_RTC_TEGRA2_BACKUP_RTC_DEV="rtc1"
 # CONFIG_DMADEVICES is not set
 # CONFIG_AUXDISPLAY is not set
 # CONFIG_UIO is not set
