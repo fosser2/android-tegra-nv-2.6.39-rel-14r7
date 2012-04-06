@@ -30,7 +30,17 @@
 #include <linux/slab.h>
 #include "../iio.h"
 
-#define CONVERSION_TIME_MS		100
+#define TAG             "ISL29023: "
+
+#define __ISL29023_GENERIC_DEBUG__        1
+
+#if (__ISL29023_GENERIC_DEBUG__)
+#define logd(x...)      do { printk(x); } while(0)
+#else
+#define logd(x...)      do {} while(0)
+#endif
+
+#define CONVERSION_TIME_MS		50
 
 #define ISL29023_REG_ADD_COMMAND1	0x00
 #define COMMMAND1_OPMODE_SHIFT		5
@@ -58,6 +68,7 @@ struct isl29023_chip {
 	struct iio_dev		*indio_dev;
 	struct i2c_client	*client;
 	struct mutex		lock;
+	int 			irq;
 	unsigned int		range;
 	unsigned int		adc_bit;
 	int			prox_scheme;
@@ -319,18 +330,19 @@ static ssize_t show_name(struct device *dev,
 }
 
 static IIO_DEVICE_ATTR(range, S_IRUGO | S_IWUSR, show_range, store_range, 0);
-static IIO_DEVICE_ATTR(resolution, S_IRUGO | S_IWUSR,
-	show_resolution, store_resolution, 0);
+static IIO_DEVICE_ATTR(resolution, S_IRUGO | S_IWUSR, show_resolution, store_resolution, 0);
 static IIO_DEVICE_ATTR(lux, S_IRUGO, show_lux, NULL, 0);
 static IIO_DEVICE_ATTR(ir, S_IRUGO, show_ir, NULL, 0);
 static IIO_DEVICE_ATTR(name, S_IRUGO, show_name, NULL, 0);
 
+#define ISL29023_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+#define ISL29023_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
 static struct attribute *isl29023_attributes[] = {
-	&iio_dev_attr_name.dev_attr.attr,
-	&iio_dev_attr_range.dev_attr.attr,
-	&iio_dev_attr_resolution.dev_attr.attr,
-	&iio_dev_attr_lux.dev_attr.attr,
-	&iio_dev_attr_ir.dev_attr.attr,
+	ISL29023_DEV_ATTR(name),
+	ISL29023_DEV_ATTR(range),
+	ISL29023_DEV_ATTR(resolution),
+	ISL29023_DEV_ATTR(lux),
+	ISL29023_DEV_ATTR(ir),
 	NULL
 };
 
@@ -378,6 +390,8 @@ static int isl29023_chip_init(struct i2c_client *client)
 	int new_adc_bit;
 	unsigned int new_range;
 
+	logd(TAG "isl29023_chip_init\r\n");
+
 	isl29023_regulator_enable(client);
 
 	for (i = 0; i < ARRAY_SIZE(chip->reg_cache); i++) {
@@ -393,6 +407,9 @@ static int isl29023_chip_init(struct i2c_client *client)
 		dev_err(&client->dev, "Init of isl29023 fails\n");
 		return -ENODEV;
 	}
+
+	logd(TAG "isl29023_chip_init successfully\r\n");
+
 	return 0;
 }
 
@@ -401,7 +418,9 @@ static int __devinit isl29023_probe(struct i2c_client *client,
 {
 	struct isl29023_chip *chip;
 	int err;
-
+	
+	logd(TAG "isl29023_probe\r\n");
+	
 	chip = kzalloc(sizeof (struct isl29023_chip), GFP_KERNEL);
 	if (!chip) {
 		dev_err(&client->dev, "Memory allocation fails\n");
@@ -411,6 +430,7 @@ static int __devinit isl29023_probe(struct i2c_client *client,
 
 	i2c_set_clientdata(client, chip);
 	chip->client = client;
+	chip->irq = client->irq;
 
 	mutex_init(&chip->lock);
 
@@ -437,7 +457,8 @@ static int __devinit isl29023_probe(struct i2c_client *client,
 		dev_err(&client->dev, "iio registration fails\n");
 		goto exit_iio_free;
 	}
-
+	
+	logd(TAG "isl29023_probed successfully\r\n");
 	return 0;
 
 exit_iio_free:
