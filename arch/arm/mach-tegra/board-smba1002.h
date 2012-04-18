@@ -45,7 +45,7 @@
 #define SMBA1002_BL_VDD			TEGRA_GPIO_PW0
 #define SMBA1002_BL_PWM			TEGRA_GPIO_PU3 /* PWM */
 //#define SMBA1002_HDMI_ENB		TEGRA_GPIO_PV5 /* unconfirmed */ // Does smba1002 have HDMI enbl?
-#define SMBA1002_HDMI_HPD		TEGRA_GPIO_PJ7 /* 1=HDMI plug detected */
+//#define SMBA1002_HDMI_HPD		TEGRA_GPIO_PJ7 /* 1=HDMI plug detected */
 
 #define SMBA1002_BL_PWM_ID		0				/* PWM0 controls backlight */
 
