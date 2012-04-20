@@ -659,6 +659,14 @@ static int tegra_i2c_xfer_msg(struct tegra_i2c_bus *i2c_bus,
 		}
 	}
 
+	/*
+	 * In NACK error condition resetting of I2C controller happens
+	 * before STOP condition is properly completed by I2C controller,
+	 * so wait for 2 clock cycle to complete STOP condition.
+	 */
+	if (i2c_dev->msg_err == I2C_ERR_NO_ACK)
+		udelay(DIV_ROUND_UP(2 * 1000000, i2c_bus->bus_clk_rate));
+
 	tegra_i2c_init(i2c_dev);
 
 	if (i2c_dev->msg_err == I2C_ERR_NO_ACK) {
