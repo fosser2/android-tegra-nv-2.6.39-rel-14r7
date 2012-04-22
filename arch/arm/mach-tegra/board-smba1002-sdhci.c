@@ -34,7 +34,6 @@
 #include "devices.h"
 #include "board-smba1002.h"
 
-extern void set_wifi_led(int set);
 
 static void (*wlan_status_cb)(int card_present, void *dev_id) = NULL;
 static void *wlan_status_cb_devid = NULL;
@@ -132,10 +131,8 @@ static int smba1002_wifi_power(int on)
         pr_debug("%s: %d\n", __func__, on);
 
 		smba1002_bt_wifi_gpio_set(on);
-		msleep(200);        
-		gpio_set_value(SMBA1002_WLAN_RESET, on);
-	if (!on) set_wifi_led(0);
-        msleep(200);
+        gpio_set_value(SMBA1002_WLAN_RESET, on);
+        mdelay(200);
 
         return 0;
 }
@@ -144,7 +141,7 @@ static int smba1002_wifi_reset(int on)
 {
 	gpio_set_value(SMBA1002_WLAN_RESET, !on);
         pr_debug("%s: %d\n", __func__, on);
-	if (on) set_wifi_led(0);
+//	pr_debug("%s: do nothing, on = %d\n", __func__, on);
         return 0;
 }
 
@@ -219,4 +216,3 @@ int __init smba1002_sdhci_register_devices(void)
 	return ret;
 
 }
-
