@@ -90,13 +90,13 @@ void __init smba1002_setup_bluesleep(void)
 	}
 
 	res[0].name   = "gpio_host_wake";
-	res[0].start  = SMBA1002_BT_WAKEUP;
-	res[0].end    = SMBA1002_BT_WAKEUP;
+	res[0].start  = TEGRA_GPIO_PU6;
+	res[0].end    = TEGRA_GPIO_PU6;
 	res[0].flags  = IORESOURCE_IO;
 
 	res[1].name   = "host_wake";
-	res[1].start  = gpio_to_irq(SMBA1002_BT_WAKEUP);
-	res[1].end    = gpio_to_irq(SMBA1002_BT_WAKEUP);
+	res[1].start  = gpio_to_irq(TEGRA_GPIO_PU6);
+	res[1].end    = gpio_to_irq(TEGRA_GPIO_PU6);
 	res[1].flags  = IORESOURCE_IRQ | IORESOURCE_IRQ_LOWEDGE;
 
 	if (platform_device_add_resources(pdev, res, 2)) {
