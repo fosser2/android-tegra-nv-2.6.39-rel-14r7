@@ -74,6 +74,7 @@
 
 //#define SMBA1002_GPS  // Define for Fosser's GPS MOD 
 #define SMBA1002_48KHZ_AUDIO   /* <- define this if you want 48khz audio sampling rate instead of 44100Hz */
+#define SMBA9701_INT_MIC_EN    TEGRA_GPIO_PX0 /* 0 = disabled */
 
 
 // TPS6586x GPIOs as registered 
