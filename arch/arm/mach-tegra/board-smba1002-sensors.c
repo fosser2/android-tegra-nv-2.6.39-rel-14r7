@@ -45,7 +45,7 @@ static struct i2c_board_info __initdata smba1002_i2c_bus0_sensor_info[] = {
 	},
 	{
 			I2C_BOARD_INFO("isl29023", 0x44),
-		.irq = TEGRA_GPIO_TO_IRQ(TEGRA_GPIO_PV5),
+		.irq = TEGRA_GPIO_TO_IRQ(TEGRA_GPIO_PQ6),
 
 	},   
 };
@@ -78,9 +78,9 @@ static struct i2c_board_info __initdata smba1002_i2c_bus4_sensor_info[] = {
 
 int __init smba1002_sensors_register_devices(void)
 {
-	tegra_gpio_enable(TEGRA_GPIO_PV5);
-	gpio_request(TEGRA_GPIO_PV5, "isl29023_irq");
-	gpio_direction_input(TEGRA_GPIO_PV5);
+	tegra_gpio_enable(TEGRA_GPIO_PQ6);
+	gpio_request(TEGRA_GPIO_PQ6, "isl29023_irq");
+	gpio_direction_input(TEGRA_GPIO_PQ6);
 
 	tegra_gpio_enable(TEGRA_GPIO_PH2);
 	gpio_request(TEGRA_GPIO_PH2, "ac_present_irq");
