@@ -42,7 +42,7 @@
 #include "gpio-names.h"
 #include "devices.h"
 
-int __init smba_camera_register_devices(void)
+int __init smba1002_camera_register_devices(void)
 {
 	gpio_request(SMBA1002_CAMERA_POWER, "camera_power");
 	gpio_direction_output(SMBA1002_CAMERA_POWER, 1);
