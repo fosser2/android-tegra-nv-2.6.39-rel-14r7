@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux/arm 2.6.39.4 Kernel Configuration
-# Tue May  1 12:48:00 2012
+# Tue May  1 13:19:17 2012
 #
 CONFIG_ARM=y
 CONFIG_HAVE_PWM=y
@@ -1343,7 +1343,7 @@ CONFIG_KEYBOARD_GPIO=y
 # CONFIG_KEYBOARD_STOWAWAY is not set
 # CONFIG_KEYBOARD_SUNKBD is not set
 # CONFIG_KEYBOARD_XTKBD is not set
-# CONFIG_KEYBOARD_SO340010 is not set
+CONFIG_KEYBOARD_SO340010=y
 # CONFIG_INPUT_MOUSE is not set
 CONFIG_INPUT_JOYSTICK=y
 # CONFIG_JOYSTICK_ANALOG is not set
