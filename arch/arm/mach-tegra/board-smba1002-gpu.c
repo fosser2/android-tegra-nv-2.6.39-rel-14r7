@@ -23,6 +23,7 @@
 #include <linux/platform_device.h>
 #include <linux/pwm_backlight.h>
 #include <linux/kernel.h>
+#include <linux/antares_dock.h>
 //#include <mach/tegra_cpufreq.h>
 #ifdef CONFIG_HAS_EARLYSUSPEND
 #include <linux/earlysuspend.h>
@@ -374,6 +375,19 @@ static struct platform_device smba1002_nvmap_device = {
 	},
 };
 
+static struct dock_platform_data dock_on_platform_data = {
+  .irq    = TEGRA_GPIO_TO_IRQ(SMBA1002_DOCK),
+  .gpio_num  = SMBA1002_DOCK,
+  };
+static struct platform_device tegra_dock_device =
+{
+	.name = "tegra_dock",
+	.id   = -1,
+	.dev = {
+	    .platform_data = &dock_on_platform_data,
+	},
+};
+  
 static struct platform_device *smba1002_gfx_devices[] __initdata = {
 	&smba1002_nvmap_device,
 	&tegra_grhost_device,
@@ -381,6 +395,7 @@ static struct platform_device *smba1002_gfx_devices[] __initdata = {
 	&smba1002_panel_bl_driver,
 	&tegra_gart_device,
 	&tegra_avp_device,
+	&tegra_dock_device,
 };
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
