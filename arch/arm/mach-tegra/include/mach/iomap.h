@@ -36,7 +36,9 @@
 
 #if defined(CONFIG_ARCH_TEGRA_2x_SOC)
 #define TEGRA_DRAM_BASE			0x00000000
+
 #define TEGRA_DRAM_SIZE			SZ_512M		/* Maximum size */
+
 #else
 #define TEGRA_DRAM_BASE			0x80000000
 #define TEGRA_DRAM_SIZE			(SZ_2G - SZ_1M)	/* Maximum size */

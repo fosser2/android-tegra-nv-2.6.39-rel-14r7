@@ -2,6 +2,7 @@
  * drivers/media/video/tegra/tegra_camera.c
  *
  * Copyright (C) 2010 Google, Inc.
+ * Copyright (C) 2012 Nvidia Corp
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -43,6 +44,7 @@ struct tegra_camera_dev {
 	struct clk *vi_sensor_clk;
 	struct clk *csus_clk;
 	struct clk *csi_clk;
+	struct clk *emc_clk;
 	struct regulator *reg;
 	struct tegra_camera_clk_info info;
 	struct mutex tegra_camera_lock;
@@ -95,6 +97,26 @@ static int tegra_camera_disable_csi(struct tegra_camera_dev *dev)
 	return 0;
 }
 
+static int tegra_camera_enable_emc(struct tegra_camera_dev *dev)
+{
+	/* tegra_camera wasn't added as a user of emc_clk until 3x.
+	   set to 150 MHz, will likely need to be increased as we support
+	   sensors with higher framerates and resolutions. */
+	clk_enable(dev->emc_clk);
+#ifdef CONFIG_ARCH_TEGRA_2x_SOC
+	clk_set_rate(dev->emc_clk, 300000000);
+#else
+	clk_set_rate(dev->emc_clk, 150000000);
+#endif
+	return 0;
+}
+
+static int tegra_camera_disable_emc(struct tegra_camera_dev *dev)
+{
+	clk_disable(dev->emc_clk);
+	return 0;
+}
+
 struct tegra_camera_block tegra_camera_block[] = {
 	[TEGRA_CAMERA_MODULE_ISP] = {tegra_camera_enable_isp,
 		tegra_camera_disable_isp, false},
@@ -123,9 +145,9 @@ static bool tegra_camera_enabled(struct tegra_camera_dev *dev)
 
 static int tegra_camera_clk_set_rate(struct tegra_camera_dev *dev)
 {
-	u32 offset;
-	struct clk *clk;
+	struct clk *clk, *clk_parent;
 	struct tegra_camera_clk_info *info = &dev->info;
+	unsigned long parent_rate, parent_div_rate, parent_div_rate_pre;
 
 	if (!info) {
 		dev_err(dev->dev,
@@ -144,11 +166,9 @@ static int tegra_camera_clk_set_rate(struct tegra_camera_dev *dev)
 	switch (info->clk_id) {
 	case TEGRA_CAMERA_VI_CLK:
 		clk = dev->vi_clk;
-		offset = 0x148;
 		break;
 	case TEGRA_CAMERA_VI_SENSOR_CLK:
 		clk = dev->vi_sensor_clk;
-		offset = 0x1a8;
 		break;
 	default:
 		dev_err(dev->dev,
@@ -157,24 +177,47 @@ static int tegra_camera_clk_set_rate(struct tegra_camera_dev *dev)
 		return -EINVAL;
 	}
 
-	clk_set_rate(clk, info->rate);
+	clk_parent = clk_get_parent(clk);
+	parent_rate = clk_get_rate(clk_parent);
+	dev_dbg(dev->dev, "%s: clk_id=%d, parent_rate=%lu, clk_rate=%lu\n",
+			__func__, info->clk_id, parent_rate, info->rate);
+	parent_div_rate = parent_rate;
+	parent_div_rate_pre = parent_rate;
+
+	/*
+	 * The requested clock rate from user space should be respected.
+	 * This loop is to search the clock rate that is higher than requested
+	 * clock.
+	 */
+	while (parent_div_rate >= info->rate) {
+		parent_div_rate_pre = parent_div_rate;
+		parent_div_rate = clk_round_rate(clk, parent_div_rate-1);
+	}
+
+	dev_dbg(dev->dev, "%s: set_rate=%lu",
+			__func__, parent_div_rate_pre);
+
+	clk_set_rate(clk, parent_div_rate_pre);
 
 	if (info->clk_id == TEGRA_CAMERA_VI_CLK) {
-		u32 val = 0x2;
-		void __iomem *car = IO_ADDRESS(TEGRA_CLK_RESET_BASE);
+		/*
+		 * bit 25: 0 = pd2vi_Clk, 1 = vi_sensor_clk
+		 * bit 24: 0 = internal clock, 1 = external clock(pd2vi_clk)
+		 */
+		if (info->flag == TEGRA_CAMERA_ENABLE_PD2VI_CLK)
+			tegra_clk_cfg_ex(clk, TEGRA_CLK_VI_INP_SEL, 2);
+
+#ifdef CONFIG_ARCH_TEGRA_2x_SOC
+		u32 val;
 		void __iomem *apb_misc = IO_ADDRESS(TEGRA_APB_MISC_BASE);
-
-		if (info->flag == TEGRA_CAMERA_ENABLE_PD2VI_CLK) {
-			val |= TEGRA_CAMERA_PD2VI_CLK_SEL_VI_SENSOR_CLK;
-		}
-
-		writel(val, car + offset);
-
 		val = readl(apb_misc + 0x42c);
 		writel(val | 0x1, apb_misc + 0x42c);
+#endif
 	}
 
 	info->rate = clk_get_rate(clk);
+	dev_dbg(dev->dev, "%s: get_rate=%lu",
+			__func__, info->rate);
 	return 0;
 
 }
@@ -356,6 +399,8 @@ static int tegra_camera_open(struct inode *inode, struct file *file)
 	dev_info(dev->dev, "%s\n", __func__);
 	file->private_data = dev;
 
+	tegra_camera_enable_emc(dev);
+
 	return 0;
 }
 
@@ -382,6 +427,8 @@ static int tegra_camera_release(struct inode *inode, struct file *file)
 		dev->power_refcnt = 0;
 		mutex_unlock(&dev->tegra_camera_lock);
 	}
+
+	tegra_camera_disable_emc(dev);
 
 	return 0;
 }
@@ -442,8 +489,15 @@ static int tegra_camera_probe(struct platform_device *pdev)
 	dev->reg = regulator_get(&pdev->dev, "avdd_dsi_csi");
 #endif
 	if (IS_ERR_OR_NULL(dev->reg)) {
-		dev_err(&pdev->dev, "%s: couldn't get regulator\n", __func__);
-		return PTR_ERR(dev->reg);
+		if (dev->reg == ERR_PTR(-ENODEV)) {
+			dev->reg = NULL;
+			dev_info(&pdev->dev, "%s: no regulator device, overriding\n",
+							__func__);
+		} else {
+			dev_err(&pdev->dev, "%s: couldn't get regulator\n",
+							__func__);
+			return PTR_ERR(dev->reg);
+		}
 	}
 
 	dev->misc_dev.minor = MISC_DYNAMIC_MINOR;
@@ -473,12 +527,17 @@ static int tegra_camera_probe(struct platform_device *pdev)
 	err = tegra_camera_clk_get(pdev, "csi", &dev->csi_clk);
 	if (err)
 		goto csi_clk_get_err;
+	err = tegra_camera_clk_get(pdev, "emc", &dev->emc_clk);
+	if (err)
+		goto emc_clk_get_err;
 
 	/* dev is set in order to restore in _remove */
 	platform_set_drvdata(pdev, dev);
 
 	return 0;
 
+emc_clk_get_err:
+	clk_put(dev->emc_clk);
 csi_clk_get_err:
 	clk_put(dev->csus_clk);
 csus_clk_get_err:

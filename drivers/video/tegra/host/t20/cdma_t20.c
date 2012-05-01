@@ -72,7 +72,7 @@ static int t20_push_buffer_init(struct push_buffer *pb)
 
 	/* allocate and map pushbuffer memory */
 	pb->mem = nvmap_alloc(nvmap, PUSH_BUFFER_SIZE + 4, 32,
-			      NVMAP_HANDLE_WRITE_COMBINE);
+			      NVMAP_HANDLE_WRITE_COMBINE, 0);
 	if (IS_ERR_OR_NULL(pb->mem)) {
 		pb->mem = NULL;
 		goto fail;
@@ -208,7 +208,7 @@ static int t20_cdma_timeout_init(struct nvhost_cdma *cdma,
 	/* allocate and map syncpt incr memory */
 	sb->mem = nvmap_alloc(nvmap,
 			(SYNCPT_INCR_BUFFER_SIZE_WORDS * sizeof(u32)), 32,
-			NVMAP_HANDLE_WRITE_COMBINE);
+			NVMAP_HANDLE_WRITE_COMBINE, 0);
 	if (IS_ERR_OR_NULL(sb->mem)) {
 		sb->mem = NULL;
 		goto fail;
