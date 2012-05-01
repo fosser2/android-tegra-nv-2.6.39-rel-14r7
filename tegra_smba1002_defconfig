@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux/arm 2.6.39.4 Kernel Configuration
-# Tue May  1 13:24:39 2012
+# Tue May  1 18:10:45 2012
 #
 CONFIG_ARM=y
 CONFIG_HAVE_PWM=y
@@ -1848,9 +1848,10 @@ CONFIG_MEDIA_SUPPORT=y
 #
 # Multimedia core support
 #
-# CONFIG_MEDIA_CONTROLLER is not set
+CONFIG_MEDIA_CONTROLLER=y
 CONFIG_VIDEO_DEV=y
 CONFIG_VIDEO_V4L2_COMMON=y
+CONFIG_VIDEO_V4L2_SUBDEV_API=y
 # CONFIG_DVB_CORE is not set
 CONFIG_VIDEO_MEDIA=y
 
