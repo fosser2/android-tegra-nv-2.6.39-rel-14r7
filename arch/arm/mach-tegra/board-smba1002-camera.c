@@ -1,7 +1,7 @@
 /*
  * arch/arm/mach-tegra/board-smba1002-camera.c
  *
- * Copyright (C) 2011 Eduardo José Tagle <ejtagle@tutopia.com>
+ * Copyright (C) 2011 Artem Makhutov <artem@makhutov.org>
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -19,8 +19,6 @@
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/clk.h>
-#include <linux/mtd/mtd.h>
-#include <linux/mtd/partitions.h>
 #include <linux/platform_data/tegra_usb.h>
 #include <linux/gpio.h>
 #include <linux/delay.h>
@@ -37,8 +35,6 @@
 #include <mach/irqs.h>
 #include <mach/nand.h>
 #include <mach/iomap.h>
-#include <linux/i2c.h>
-#include <media/mt9v113.h>
 
 #include "board.h"
 #include "board-smba1002.h"
@@ -46,28 +42,10 @@
 #include "gpio-names.h"
 #include "devices.h"
 
-static struct platform_device smba1002_camera_pm_device = {
-	.name		= "smba1002-pm-camera",
-	.id			= -1,
-};
-
-
-static struct platform_device *smba1002_camera_pm_devices[] __initdata = {
-	&smba1002_camera_pm_device,
-};
-
-static struct i2c_board_info __initdata smba1002_i2c_bus3_sensor_info[] = {
-         {
-		I2C_BOARD_INFO(MT9V113_MODULE_NAME, MT9V113_I2C_ADDR),
-		.irq = TEGRA_GPIO_TO_IRQ(SMBA1002_CAMERA_POWER),
-		//.platform_data = &beagle_mt9v113_platform_data,
-         },
-};
-
-int __init smba1002_camera_register_devices(void)
+int __init smba_camera_register_devices(void)
 {
-
-	return i2c_register_board_info(3, smba1002_i2c_bus3_sensor_info,
-                ARRAY_SIZE(smba1002_i2c_bus3_sensor_info));	
-	return platform_add_devices(smba1002_camera_pm_devices, ARRAY_SIZE(smba1002_camera_pm_devices));
+	gpio_request(SMBA1002_CAMERA_POWER, "camera_power");
+	gpio_direction_output(SMBA1002_CAMERA_POWER, 1);
+	gpio_set_value(SMBA1002_CAMERA_POWER, 0);
+	return 0;
 }
