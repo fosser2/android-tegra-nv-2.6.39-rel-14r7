@@ -163,7 +163,6 @@ static int smba1002_hdmi_disable(void)
 	return 0;
 }
 
-//#define TEGRA_ROUND_ALLOC(x) (((x) + 4095) & ((unsigned)(-4096)))
 
 /* If using 1024x600 panel (Shuttle default panel) */
 
@@ -193,7 +192,7 @@ static struct tegra_fb_data smba1002_fb_data = {
 	.bits_per_pixel	= 32,
 };
 
-
+#if defined(SMBA1002_1920x1080HDMI)
 
 /* Frame buffer size assuming 16bpp color and 2 pages for page flipping */
 //#define SMBA1002_FB_HDMI_SIZE TEGRA_ROUND_ALLOC(1920*1080*(32/8)*2)
@@ -205,9 +204,9 @@ static struct tegra_fb_data smba1002_hdmi_fb_data = {
 	.bits_per_pixel	= 32,
 };
 
-#if 0
+#else
 
-#define SMBA1002_FB_HDMI_SIZE TEGRA_ROUND_ALLOC(1280*720*(16/8)*2)
+//#define SMBA1002_FB_HDMI_SIZE TEGRA_ROUND_ALLOC(1280*720*(16/8)*2)
 
 static struct tegra_fb_data smba1002_hdmi_fb_data = {
 	.win		= 0,

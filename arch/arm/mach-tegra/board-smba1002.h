@@ -45,7 +45,7 @@
 #define SMBA1002_EN_VDD_PANEL	TEGRA_GPIO_PC6 
 #define SMBA1002_BL_VDD			TEGRA_GPIO_PW0
 #define SMBA1002_BL_PWM			TEGRA_GPIO_PU3 /* PWM */
-//#define SMBA1002_HDMI_ENB		TEGRA_GPIO_PV5 /* unconfirmed */ // Does smba1002 have HDMI enbl?
+//#define SMBA1002_HDMI_ENB		TEGRA_GPIO_PV5 /* confirmed */ // Does smba1002 have HDMI enbl !
 #define SMBA1002_HDMI_HPD		TEGRA_GPIO_PN7 /* 1=HDMI plug detected */
 
 #define SMBA1002_BL_PWM_ID		0				/* PWM0 controls backlight */
@@ -66,11 +66,8 @@
 
 #define DYNAMIC_GPU_MEM 1						/* use dynamic memory for GPU */
 
-#define SMBA1002_1024x600PANEL1 /* The smba1002 default panel */
-
 /* maximum allowed HDMI resolution */
 
-#define SMBA1002_1280x720HDMI
 
 //#define SMBA1002_GPS  // Define for Fosser's GPS MOD 
 #define SMBA1002_48KHZ_AUDIO   /* <- define this if you want 48khz audio sampling rate instead of 44100Hz */
@@ -170,11 +167,15 @@ extern int smba1002_camera_register_devices(void);
 #define TEGRA_ROUND_ALLOC(x) (((x) + 4095) & ((unsigned)(-4096)))
 /*Framebuffer Size for default Gtablet Panel*/
 #define SMBA1002_FB_SIZE TEGRA_ROUND_ALLOC(1024*600*(32/8)*SMBA1002_FB_PAGES)
-/*Frambuffer size for 720p HDMI Framebuffer Output*/
-#define SMBA1002_FB_HDMI_SIZE TEGRA_ROUND_ALLOC(1920*1080*(32/8)*2)
+
+//#define SMBA1002_1024x600PANEL1 /* The smba1002 default panel */
+//#define SMBA1002_1920x1080HDMI
+#if defined(SMBA1002_1920x1080HDMI)
+#define SMBA1002_FB_HDMI_SIZE TEGRA_ROUND_ALLOC(1920*1080*(16/8)*2)
+#else
+#define SMBA1002_FB_HDMI_SIZE TEGRA_ROUND_ALLOC(1280*720*(16/8)*2)
+#endif
 
 
 #endif
-
-/*Limiting Frambuffers to Default Panel and 720p memory output.  Check board-shuttle.h for other options*/
 
