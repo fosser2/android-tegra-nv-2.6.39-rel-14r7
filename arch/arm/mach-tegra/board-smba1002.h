@@ -118,7 +118,7 @@
 #define SMBA1002_HP_DETECT	TEGRA_GPIO_PW2 	/* HeadPhone detect for audio codec: 1=Hedphone plugged */
 
 #define SMBA1002_NVEC_REQ	TEGRA_GPIO_PD0	/* Set to 0 to send a command to the NVidia Embedded controller */
-#define SMBA1002_NVEC_I2C_ADDR 0x8a 			/* I2C address of Tegra, when acting as I2C slave */
+#define SMBA1002_NVEC_I2C_ADDR 0x00FC 			/* I2C address of Tegra, when acting as I2C slave */
 
 #define SMBA1002_WAKE_KEY_POWER  TEGRA_WAKE_GPIO_PV2
 #define SMBA1002_WAKE_KEY_RESUME TEGRA_WAKE_GPIO_PV2
