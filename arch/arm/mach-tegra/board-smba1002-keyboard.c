@@ -82,6 +82,7 @@ static struct gpio_keys_button smba1002_keys[] = {
 		.code = KEY_BACK,
 		.type = EV_KEY,		
 		.desc = "homepage",
+	},
 };
 #define PMC_WAKE_STATUS 0x14
 
