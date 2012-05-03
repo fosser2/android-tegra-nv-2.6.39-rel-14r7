@@ -2,7 +2,7 @@
 /*
  * arch/arm/mach-tegra/board-smba1002-keyboard.c
  *
- * Copyright (C) 2011 Eduardo José Tagle <ejtagle@tutopia.com>
+ * Copyright (C) 2011 Eduardo Josï¿½ Tagle <ejtagle@tutopia.com>
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -74,6 +74,14 @@ static struct gpio_keys_button smba1002_keys[] = {
 		.type = EV_KEY,		
 		.desc = "back",
 	},
+	[4] = {
+		.gpio = SMBA1002_KEY_HOMEPAGE,
+		.active_low = true,
+		.debounce_interval = 10,
+		.wakeup = false,		
+		.code = KEY_BACK,
+		.type = EV_KEY,		
+		.desc = "homepage",
 };
 #define PMC_WAKE_STATUS 0x14
 
