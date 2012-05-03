@@ -36,7 +36,7 @@
 
 #define SMBA1002_CAMERA_POWER 	TEGRA_GPIO_PBB5 //PD2 /* 1=powered on */
 //#define SMBA1002_CAMERA_ROTATION	TEGRA_GPIO_PX7
-#define SMBA1002_DOCK           TEGRA_GPIO_PH0
+#define SMBA1002_DOCK           TEGRA_GPIO_PI1
 
 #define SMBA1002_NAND_WPN		TEGRA_GPIO_PC7	/* NAND flash write protect: 0=writeprotected */
 
