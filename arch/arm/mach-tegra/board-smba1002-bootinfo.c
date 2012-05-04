@@ -50,7 +50,7 @@ static int smba1002_was_wakeup(void)
 {
 	unsigned long status = 
 		readl(IO_ADDRESS(TEGRA_PMC_BASE) + PMC_WAKE_STATUS);
-	return status & TEGRA_WAKE_GPIO_PV2 ? 1 : 0;
+	return status & SMBA1002_KEY_POWER ? 1 : 0;
 } 
 
 static int bootinfo_show(struct seq_file *m, void *v)

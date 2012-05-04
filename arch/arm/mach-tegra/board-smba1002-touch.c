@@ -47,9 +47,9 @@ static struct i2c_board_info __initdata smba1002_i2c_bus0_touch_info_at168[] = {
 
 int __init smba1002_touch_register_devices(void)
 {
-	tegra_gpio_enable(TEGRA_GPIO_PJ7);
-	gpio_request(TEGRA_GPIO_PJ7, "at168_touch");
-	gpio_direction_input(TEGRA_GPIO_PJ7);
+	tegra_gpio_enable(SMBA1002_TS_IRQ);
+	gpio_request(SMBA1002_TS_IRQ, "at168_touch");
+	gpio_direction_input(SMBA1002_TS_IRQ);
 	
 	i2c_register_board_info(0, smba1002_i2c_bus0_touch_info_at168, 1);
 

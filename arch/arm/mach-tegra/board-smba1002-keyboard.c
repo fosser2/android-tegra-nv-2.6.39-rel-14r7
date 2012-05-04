@@ -90,7 +90,7 @@ static int smba1002_wakeup_key(void)
 {
 	unsigned long status = 
 		readl(IO_ADDRESS(TEGRA_PMC_BASE) + PMC_WAKE_STATUS);
-	return status & TEGRA_WAKE_GPIO_PV2 ? KEY_POWER : KEY_RESERVED;
+	return status & SMBA1002_KEY_POWER ? KEY_POWER : KEY_RESERVED;
 }
 
 static struct gpio_keys_platform_data smba1002_keys_platform_data = {
@@ -116,7 +116,7 @@ static struct platform_device *smba1002_pmu_devices[] __initdata = {
 /* Register all keyboard devices */
 int __init smba1002_keyboard_register_devices(void)
 {
-  	//enable_irq_wake(gpio_to_irq(TEGRA_WAKE_GPIO_PV2));
+  	//enable_irq_wake(gpio_to_irq(SMBA1002_KEY_POWER));
 	return platform_add_devices(smba1002_pmu_devices, ARRAY_SIZE(smba1002_pmu_devices));
 }
 

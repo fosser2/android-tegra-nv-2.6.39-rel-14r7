@@ -33,19 +33,19 @@
 static struct i2c_board_info __initdata smba1002_i2c_bus0_sensor_info[] = {
 	{
 		I2C_BOARD_INFO("bq20z75-battery", 0x0B),
-		.irq = TEGRA_GPIO_TO_IRQ(TEGRA_GPIO_PH2),
+		.irq = TEGRA_GPIO_TO_IRQ(SMBA1002_BATTERY),
 	},
 	{
 		I2C_BOARD_INFO("so340010_kbd", 0x2c),
-		.irq = TEGRA_GPIO_TO_IRQ(TEGRA_GPIO_PV6),
+		.irq = TEGRA_GPIO_TO_IRQ(SMBA1002_KEYBOARD),
 	},	
 	{
 		I2C_BOARD_INFO("lis3lv02d", 0x1C),
-		.irq = TEGRA_GPIO_TO_IRQ(TEGRA_GPIO_PJ0),
+		.irq = TEGRA_GPIO_TO_IRQ(SMBA1002_LIS3LV02D),
 	},
 	{
 			I2C_BOARD_INFO("isl29023", 0x44),
-		.irq = TEGRA_GPIO_TO_IRQ(TEGRA_GPIO_PQ6),
+		.irq = TEGRA_GPIO_TO_IRQ(SMBA1002_ISL29023),
 
 	},   
 };
@@ -78,21 +78,21 @@ static struct i2c_board_info __initdata smba1002_i2c_bus4_sensor_info[] = {
 
 int __init smba1002_sensors_register_devices(void)
 {
-	tegra_gpio_enable(TEGRA_GPIO_PQ6);
-	gpio_request(TEGRA_GPIO_PQ6, "isl29023_irq");
-	gpio_direction_input(TEGRA_GPIO_PQ6);
+	tegra_gpio_enable(SMBA1002_ISL29023);
+	gpio_request(SMBA1002_ISL29023, "isl29023_irq");
+	gpio_direction_input(SMBA1002_ISL29023);
 
-	tegra_gpio_enable(TEGRA_GPIO_PH2);
-	gpio_request(TEGRA_GPIO_PH2, "ac_present_irq");
-	gpio_direction_input(TEGRA_GPIO_PH2);
+	tegra_gpio_enable(TEGRA_GPIO_AC_PRESENT_IRQ);
+	gpio_request(TEGRA_GPIO_AC_PRESENT_IRQ, "ac_present_irq");
+	gpio_direction_input(TEGRA_GPIO_AC_PRESENT_IRQ);
 
-	tegra_gpio_enable(TEGRA_GPIO_PJ0);
-	gpio_request(TEGRA_GPIO_PJ0, "lis33de_irq");
-	gpio_direction_input(TEGRA_GPIO_PJ0);
+	tegra_gpio_enable(SMBA1002_LIS3LV02D);
+	gpio_request(SMBA1002_LIS3LV02D, "lis33de_irq");
+	gpio_direction_input(SMBA1002_LIS3LV02D);
 
-	tegra_gpio_enable(TEGRA_GPIO_PV6);
-	gpio_request(TEGRA_GPIO_PV6, "so340010_kbd_irq");
-	gpio_direction_input(TEGRA_GPIO_PV6);
+	tegra_gpio_enable(SMBA1002_KEYBOARD);
+	gpio_request(SMBA1002_KEYBOARD, "so340010_kbd_irq");
+	gpio_direction_input(SMBA1002_KEYBOARD);
 	
 		tegra_gpio_enable(SMBA1002_TEMP_ALERT);
 	gpio_request(SMBA1002_TEMP_ALERT, "adt7461_temp_alert_irq");
