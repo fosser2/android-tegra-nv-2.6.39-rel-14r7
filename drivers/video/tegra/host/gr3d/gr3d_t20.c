@@ -355,7 +355,7 @@ int __init nvhost_gr3d_t20_ctxhandler_init(struct nvhost_hwctx_handler *h)
 	setup_save(NULL);
 
 	nvhost_3dctx_save_buf = nvmap_alloc(nvmap, save_size * sizeof(u32), 32,
-				NVMAP_HANDLE_WRITE_COMBINE, 0);
+				NVMAP_HANDLE_WRITE_COMBINE);
 	if (IS_ERR(nvhost_3dctx_save_buf)) {
 		int err = PTR_ERR(nvhost_3dctx_save_buf);
 		nvhost_3dctx_save_buf = NULL;

@@ -446,7 +446,7 @@ static struct nvhost_hwctx *ctxmpe_alloc(struct nvhost_channel *ch)
 	if (!ctx)
 		return NULL;
 	ctx->restore = nvmap_alloc(nvmap, restore_size * 4, 32,
-				NVMAP_HANDLE_WRITE_COMBINE, 0);
+				NVMAP_HANDLE_WRITE_COMBINE);
 	if (IS_ERR_OR_NULL(ctx->restore)) {
 		kfree(ctx);
 		return NULL;
@@ -537,7 +537,7 @@ int __init nvhost_mpe_ctxhandler_init(struct nvhost_hwctx_handler *h)
 	setup_save(NULL);
 
 	save_buf = nvmap_alloc(nvmap, save_size * 4, 32,
-				NVMAP_HANDLE_WRITE_COMBINE, 0);
+				NVMAP_HANDLE_WRITE_COMBINE);
 	if (IS_ERR(save_buf)) {
 		int err = PTR_ERR(save_buf);
 		save_buf = NULL;

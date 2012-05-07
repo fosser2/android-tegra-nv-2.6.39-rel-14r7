@@ -740,8 +740,7 @@ void nvmap_munmap(struct nvmap_handle_ref *ref, void *addr)
 }
 
 struct nvmap_handle_ref *nvmap_alloc(struct nvmap_client *client, size_t size,
-				     size_t align, unsigned int flags,
-				     unsigned int heap_mask)
+				     size_t align, unsigned int flags)
 {
 	const unsigned int default_heap = (NVMAP_HEAP_SYSMEM |
 					   NVMAP_HEAP_CARVEOUT_GENERIC);
