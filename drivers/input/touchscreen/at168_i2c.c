@@ -149,6 +149,7 @@ static int at168_read_registers(struct at168_data *touch, unsigned char reg, uns
 	return ret;
 }
 
+/*
 static ssize_t at168_dump_registers(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	int ret,i,written=0;
@@ -156,8 +157,8 @@ static ssize_t at168_dump_registers(struct device *dev, struct device_attribute 
 	unsigned char initdata[NUM_REGISTERS] = {};
 	char *curr_buf;
 	struct at168_data *touch = i2c_get_clientdata(to_i2c_client(dev));
-	ret = at168_read_registers(touch, AT168_TOUCH_NUM, initdata, NUM_REGISTERS);
 	int cnt=0;
+	ret = at168_read_registers(touch, AT168_TOUCH_NUM, initdata, NUM_REGISTERS);
 	if(ret > 0)
 	{
 		curr_buf = buf;
@@ -171,8 +172,8 @@ static ssize_t at168_dump_registers(struct device *dev, struct device_attribute 
 	return written;
 }
 
-
 static DEVICE_ATTR(dump_registers, 0664, at168_dump_registers, NULL);
+*/
 
 static int at168_probe(struct i2c_client *client,
 	const struct i2c_device_id *id)
@@ -183,6 +184,8 @@ static int at168_probe(struct i2c_client *client,
 	unsigned char initdata[AT168_VERSION_PROTOCOL - AT168_XMAX_LO + 1] = {};
 	int ret = 0;
 	int j = 0;
+	int version, XMaxPosition, YMaxPosition;
+	//int XMinPosition, YMinPosition;
 
 	touch = kzalloc(sizeof(struct at168_data), GFP_KERNEL);
 	if (!touch) {
@@ -231,11 +234,11 @@ static int at168_probe(struct i2c_client *client,
 		j++;
 	}while(j < 8);
 	
-	int version = ((initdata[4] << 24) | (initdata[5] << 16) | (initdata[6] << 8) | (initdata[7]) );
-	/*int XMinPosition = 0; //AT168_MIN_X;
-	int YMinPosition = 0; //AT168_MIN_Y;*/
-	int XMaxPosition = ((initdata[1] << 8) | (initdata[0])); //AT168_MAX_X;
-	int YMaxPosition = ((initdata[3] << 8) | (initdata[2])); //AT168_MAX_Y;
+	version = ((initdata[4] << 24) | (initdata[5] << 16) | (initdata[6] << 8) | (initdata[7]) );
+	/*XMinPosition = 0; //AT168_MIN_X;
+	YMinPosition = 0; //AT168_MIN_Y;*/
+	XMaxPosition = ((initdata[1] << 8) | (initdata[0])); //AT168_MAX_X;
+	YMaxPosition = ((initdata[3] << 8) | (initdata[2])); //AT168_MAX_Y;
 
 	printk("at168_touch: now FW xMAX is %d   yMAx is %d Version is %x.\n",XMaxPosition, YMaxPosition, version);
 
@@ -320,7 +323,7 @@ fail_i2c_or_register:
 static int at168_suspend(struct i2c_client *client, pm_message_t state)
 {
 	struct at168_data *touch = i2c_get_clientdata(client);
-	int ret;
+//	int ret;
 
 	if (WARN_ON(!touch))
 		return -EINVAL;
@@ -328,19 +331,20 @@ static int at168_suspend(struct i2c_client *client, pm_message_t state)
 	disable_irq(client->irq);
 
 	/* disable scanning and enable deep sleep */
-/*	ret = i2c_smbus_write_byte_data(client, CSR, CSR_SLEEP_EN);
+/*
+	ret = i2c_smbus_write_byte_data(client, CSR, CSR_SLEEP_EN);
 	if (ret < 0) {
 		dev_err(&client->dev, "%s: sleep enable fail\n", __func__);
 		return ret;
-	}*/
-
+	}
+*/
 	return 0;
 }
 
 static int at168_resume(struct i2c_client *client)
 {
 	struct at168_data *touch = i2c_get_clientdata(client);
-	int ret = 0;
+//	int ret = 0;
 
 	if (WARN_ON(!touch))
 		return -EINVAL;
@@ -348,14 +352,15 @@ static int at168_resume(struct i2c_client *client)
 	at168_reset(touch);
 
 	/* enable scanning and disable deep sleep */
-/*	ret = i2c_smbus_write_byte_data(client, C_FLAG, 0);
+/*
+	ret = i2c_smbus_write_byte_data(client, C_FLAG, 0);
 	if (ret >= 0)
 		ret = i2c_smbus_write_byte_data(client, CSR, CSR_SCAN_EN);
 	if (ret < 0) {
 		dev_err(&client->dev, "%s: scan enable fail\n", __func__);
 		return ret;
-	}*/
-
+	}
+*/
 	enable_irq(client->irq);
 
 	return 0;
