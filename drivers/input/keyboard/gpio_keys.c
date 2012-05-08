@@ -403,8 +403,7 @@ static int __devinit gpio_keys_setup_key(struct platform_device *pdev,
 			button->gpio, error);
 		goto fail3;
 	}
-	if (button->wakeup) {
-	  enable_irq_wake(irq);}
+
 	irqflags = IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING;
 	/*
 	 * If platform has specified that the button can be disabled,
@@ -584,7 +583,7 @@ static int gpio_keys_suspend(struct device *dev)
 			struct gpio_keys_button *button = &pdata->buttons[i];
 			if (button->wakeup) {
 				int irq = gpio_to_irq(button->gpio);
-				//enable_irq_wake(irq);
+				enable_irq_wake(irq);
 			}
 		}
 	}
@@ -608,12 +607,13 @@ static int gpio_keys_resume(struct device *dev)
 		struct gpio_keys_button *button = &pdata->buttons[i];
 		if (button->wakeup && device_may_wakeup(&pdev->dev)) {
 			int irq = gpio_to_irq(button->gpio);
-			//disable_irq_wake(irq);
+			disable_irq_wake(irq);
 
 			if (wakeup_key == button->code) {
 				unsigned int type = button->type ?: EV_KEY;
 
 				input_event(ddata->input, type, button->code, 1);
+				input_sync(ddata->input);
 				input_event(ddata->input, type, button->code, 0);
 				input_sync(ddata->input);
 			}
