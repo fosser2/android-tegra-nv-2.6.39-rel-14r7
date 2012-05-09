@@ -123,10 +123,10 @@ static struct tegra_alc5623_platform_data smba1002_audio_pdata = {
         .gpio_hp_det            = SMBA1002_HP_DETECT,
 };
 
-static struct platform_device tegra_generic_codec = {
-	.name = "tegra-generic-codec",
-	.id   = -1,
-};
+//static struct platform_device tegra_generic_codec = {
+//	.name = "tegra-generic-codec",
+//	.id   = -1,
+//};
 
 static struct platform_device smba1002_audio_device = {
 	.name = "tegra-snd-alc5623",
@@ -144,7 +144,7 @@ static struct platform_device *smba1002_i2s_devices[] __initdata = {
 	&tegra_das_device,
 	&spdif_dit_device,
 	&tegra_pcm_device,
-	&tegra_generic_codec,
+//	&tegra_generic_codec,
 	&smba1002_audio_device, /* this must come last, as we need the DAS to be initialized to access the codec registers ! */
 };
 

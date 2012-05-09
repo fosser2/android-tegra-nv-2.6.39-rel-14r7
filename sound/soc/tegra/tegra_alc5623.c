@@ -63,6 +63,14 @@
 #define GPIO_EXT_MIC_EN BIT(3)
 #define GPIO_HP_DET     BIT(4)
 
+#ifdef CONFIG_MACH_SMBA9701
+#define SMBA
+#endif
+
+#ifdef  CONFIG_MACH_SMBA1002
+#define SMBA
+#endif
+
 struct tegra_alc5623 {
 	struct tegra_asoc_utils_data util_data;
 	struct tegra_alc5623_platform_data *pdata;
@@ -84,7 +92,6 @@ static int tegra_alc5623_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_card *card = codec->card;
 	struct tegra_alc5623 *machine = snd_soc_card_get_drvdata(card);
-	struct tegra_alc5623_platform_data *pdata = machine->pdata;
 	int srate, mclk;
 	int err;
 
@@ -141,17 +148,7 @@ static struct snd_soc_ops tegra_alc5623_ops = {
 	.hw_params = tegra_alc5623_hw_params,
 };
 
-static struct snd_soc_ops tegra_voice_ops = {
-	.hw_params = tegra_alc5623_hw_params,
-};
-
 static int tegra_spdif_hw_params(struct snd_pcm_substream *substream,
-                                        struct snd_pcm_hw_params *params)
-{
-        return 0;
-}
-
-static int tegra_voice_hw_params(struct snd_pcm_substream *substream,
                                         struct snd_pcm_hw_params *params)
 {
         return 0;
@@ -160,10 +157,6 @@ static int tegra_voice_hw_params(struct snd_pcm_substream *substream,
 static struct snd_soc_ops tegra_spdif_ops = {
 	.hw_params = tegra_spdif_hw_params,
 };
-
-//static struct snd_soc_ops tegra_voice_ops = {
-//	.hw_params = tegra_spdif_hw_params,
-//};
 
 static struct snd_soc_jack tegra_alc5623_hp_jack;
 
@@ -240,9 +233,7 @@ static int tegra_alc5623_event_pre_channel(struct snd_soc_dapm_widget *w,
 {
         struct snd_soc_dapm_context *dapm = w->dapm;
         struct snd_soc_card *card = dapm->card;
-        struct snd_soc_codec *codec = dapm->codec;
         struct tegra_alc5623 *machine = snd_soc_card_get_drvdata(card);
-        struct tegra_alc5623_platform_data *pdata = machine->pdata;
 
 #ifdef CONFIG_SWITCH
 	machine->swap_channels = (machine->jack_status == SND_JACK_HEADPHONE) ||
@@ -327,7 +318,6 @@ static int tegra_alc5623_event_int_mic(struct snd_soc_dapm_widget *w,
         struct snd_soc_card *card = dapm->card;
         struct tegra_alc5623 *machine = snd_soc_card_get_drvdata(card);
         struct tegra_alc5623_platform_data *pdata = machine->pdata;
-	struct snd_soc_codec *codec = dapm->codec;
 
         if (machine->dmic_reg) {
                 if (SND_SOC_DAPM_EVENT_ON(event))
@@ -339,25 +329,14 @@ static int tegra_alc5623_event_int_mic(struct snd_soc_dapm_widget *w,
         if (!(machine->gpio_requested & GPIO_INT_MIC_EN))
                 return 0;
 
- 	// Enables the mic differntial control
-        snd_soc_update_bits(codec, ALC5623_MIC_ROUTING_CTRL,
-                        (1 << 12),
-                        (!!SND_SOC_DAPM_EVENT_ON(event))*(1<<12));
-	// Mic Bias
-//	snd_soc_update_bits(codec, ALC5623_PWR_MANAG_ADD1,
-//			(1 << 11),
-//		    (!!SND_SOC_DAPM_EVENT_ON(event))*(1<<11));
-
-
         gpio_set_value_cansleep(pdata->gpio_int_mic_en,
                                 SND_SOC_DAPM_EVENT_ON(event));
-	printk("%s: Changing mic gpio to: %d\n", __func__, SND_SOC_DAPM_EVENT_ON(event));
         return 0;
 }
 
 
 
-#ifdef CONFIG_MACH_SMBA1002
+#ifdef SMBA
 static const struct snd_soc_dapm_widget dapm_widgets[] = {
 	SND_SOC_DAPM_PRE("Channel Swap Detect", tegra_alc5623_event_pre_channel),
 	SND_SOC_DAPM_SPK("Int Spk", tegra_alc5623_event_int_spk),
@@ -371,8 +350,8 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"Headphone Jack", NULL, "HPL"},
 	{"Int Spk", NULL, "AUXOUTR"},
 	{"Int Spk", NULL, "AUXOUTL"},
-        {"Mic Bias1", NULL, "Int Mic"},
-        {"MIC1", NULL, "Mic Bias1"},
+	{"Mic Bias1", NULL, "Int Mic"},
+	{"MIC1", NULL, "Mic Bias1"},
 	{"AUXINR", NULL, "FM Radio"},
 	{"AUXINL", NULL, "FM Radio"},
 };
@@ -428,7 +407,7 @@ static int tegra_alc5623_init(struct snd_soc_pcm_runtime *rtd)
                 machine->gpio_requested |= GPIO_INT_MIC_EN;
 
                 /* Disable int mic; enable signal is active-high */
-                gpio_direction_output(pdata->gpio_int_mic_en, 0);
+                gpio_direction_output(pdata->gpio_int_mic_en, 1);
         }
 
 	ret = snd_soc_add_controls(codec, controls,
@@ -496,15 +475,6 @@ static struct snd_soc_dai_link tegra_alc5623_dai[] = {
 		.ops = &tegra_alc5623_ops,
 	},
 	{
-		.name = "VOICE",
-		.stream_name = "Tegra Generic Voice",
-		.codec_name = "tegra-generic-codec",
-		.platform_name = "tegra-pcm-audio",
-		.cpu_dai_name = "tegra20-i2s.1",
-		.codec_dai_name = "tegra_generic_voice_codec",
-		.ops = &tegra_voice_ops,
-	},
-	{
 		.name = "SPDIF",
 		.stream_name = "SPDIF PCM",
 		.codec_name = "spdif-dit.0",
@@ -555,15 +525,15 @@ static __devinit int tegra_alc5623_driver_probe(struct platform_device *pdev)
 		machine->spk_reg = 0;
 //	}
 //
-//	machine->dmic_reg = regulator_get(&pdev->dev, "vdd_dmic");
-//	if (IS_ERR(machine->dmic_reg)) {
-//		dev_info(&pdev->dev, "No digital mic regulator found\n");
-		machine->dmic_reg = 0;
-//	}
+	machine->dmic_reg = regulator_get(&pdev->dev, "vdd_dmic");
+	if (IS_ERR(machine->dmic_reg)) {
+		dev_info(&pdev->dev, "No digital mic regulator found\n");
+	machine->dmic_reg = 0;
+	}
 
 	machine->swap_channels = false;
 #ifdef CONFIG_SWITCH
-	/* Addd h2w swith class support */
+	/* Add h2w swith class support */
 	ret = switch_dev_register(&tegra_alc5623_headset_switch);
 	if (ret < 0)
 		goto err_fini_utils;
