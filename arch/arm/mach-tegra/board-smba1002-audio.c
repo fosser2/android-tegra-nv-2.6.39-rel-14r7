@@ -27,7 +27,6 @@
 #include <linux/i2c-tegra.h>
 #include <linux/i2c.h>
 #include <linux/version.h>
-#include <sound/alc5623.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
@@ -41,7 +40,7 @@
 #include <mach/iomap.h>
 #include <mach/gpio.h>
 #include <mach/spdif.h>
-#include <mach/audio.h>  
+#include <mach/audio.h>
 
 #include <mach/system.h>
 
@@ -105,22 +104,20 @@ static struct tegra_audio_platform_data tegra_audio_pdata[] = {
 	}
 }; 
 
-static struct alc5623_platform_data smba1002_alc5623_pdata = {
-	.add_ctrl	= 0xD300,
-	.jack_det_ctrl	= 0,
-};
-
 static struct i2c_board_info __initdata smba1002_i2c_bus0_board_info[] = {
 	{
 		I2C_BOARD_INFO("alc5623", 0x1a),
-		.platform_data = &smba1002_alc5623_pdata,
 	},
 };
 
 
 static struct tegra_alc5623_platform_data smba1002_audio_pdata = {
-        .gpio_spkr_en           = -2,
-        .gpio_hp_det            = SMBA1002_HP_DETECT,
+	.gpio_spkr_en		= -2,
+	.gpio_hp_det		= SMBA1002_HP_DETECT,
+	.gpio_lineout_det 	= -1,
+	.gpio_hp_mute		= -1,
+	.gpio_int_mic_en	= SMBA1002_INT_MIC_EN,
+	.gpio_ext_mic_en	= -1,
 };
 
 //static struct platform_device tegra_generic_codec = {
@@ -151,9 +148,9 @@ static struct platform_device *smba1002_i2s_devices[] __initdata = {
 
 int  __init smba1002_audio_register_devices(void)
 {
-        pr_info("%s++", __func__);
-
 	int ret;
+
+        pr_info("%s++", __func__);
 
 	/* Patch in the platform data */
 	tegra_i2s_device1.dev.platform_data = &tegra_audio_pdata[0];
