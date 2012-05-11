@@ -148,7 +148,9 @@ static int tegra_camera_clk_set_rate(struct tegra_camera_dev *dev)
 	struct clk *clk, *clk_parent;
 	struct tegra_camera_clk_info *info = &dev->info;
 	unsigned long parent_rate, parent_div_rate, parent_div_rate_pre;
-
+#ifdef CONFIG_ARCH_TEGRA_2x_SOC
+	u32 val;
+#endif
 	if (!info) {
 		dev_err(dev->dev,
 				"%s: no clock info %d\n",
@@ -406,7 +408,8 @@ static int tegra_camera_open(struct inode *inode, struct file *file)
 
 static int tegra_camera_release(struct inode *inode, struct file *file)
 {
-	int i, err;
+	int i;
+//	int err;
 	struct tegra_camera_dev *dev = file->private_data;
 
 	dev_info(dev->dev, "%s\n", __func__);

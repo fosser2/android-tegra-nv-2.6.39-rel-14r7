@@ -1033,9 +1033,9 @@ static struct sensor_reg Whitebalance_Fluorescent[] = {
 {SENSOR_TABLE_END, 0x00}
 };
 
-static struct sensor_reg Whitebalance_Cloudy[] = {
-{SENSOR_TABLE_END, 0x00}
-};
+//static struct sensor_reg Whitebalance_Cloudy[] = {
+//{SENSOR_TABLE_END, 0x00}
+//};
 
 static struct sensor_reg Exposure_2[] = {
 {SENSOR_TABLE_END, 0x00}

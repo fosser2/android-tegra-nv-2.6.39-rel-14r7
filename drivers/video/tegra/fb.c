@@ -148,10 +148,10 @@ static int tegra_fb_set_par(struct fb_info *info)
 
 static int tegra_fb_setcmap(struct fb_cmap *cmap, struct fb_info *info)
 {
+	int i;
 	return 0;
 	struct tegra_fb_info *tegra_fb = info->par;
 	struct tegra_dc *dc = tegra_fb->win->dc;
-	int i;
 	u16 *red = cmap->red;
 	u16 *green = cmap->green;
 	u16 *blue = cmap->blue;

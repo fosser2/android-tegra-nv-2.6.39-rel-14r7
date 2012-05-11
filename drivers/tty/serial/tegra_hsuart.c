@@ -808,7 +808,7 @@ static int tegra_uart_init_rx_dma_buffer(struct tegra_uart_port *t)
 
 static int tegra_uart_init_rx_dma(struct tegra_uart_port *t)
 {
-	dma_addr_t rx_dma_phys;
+//	dma_addr_t rx_dma_phys;
 
 	t->rx_dma = tegra_dma_allocate_channel(TEGRA_DMA_MODE_CONTINUOUS,
 					"uart_rx_%d", t->uport.line);

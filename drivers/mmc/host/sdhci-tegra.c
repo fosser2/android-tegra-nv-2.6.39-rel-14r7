@@ -170,12 +170,12 @@ static void tegra3_sdhci_post_reset_init(struct sdhci_host *sdhci)
 	struct tegra_sdhci_platform_data *plat;
 
 	plat = pdev->dev.platform_data;
-	/* Set the base clock frequency */
+	// Set the base clock frequency
 	vendor_ctrl = sdhci_readl(sdhci, SDHCI_VENDOR_CLOCK_CNTRL);
 	vendor_ctrl &= ~(0xFF << SDHCI_VENDOR_CLOCK_CNTRL_BASE_CLK_FREQ_SHIFT);
 	vendor_ctrl |= (tegra3_sdhost_max_clk[tegra_host->instance] / 1000000) <<
 		SDHCI_VENDOR_CLOCK_CNTRL_BASE_CLK_FREQ_SHIFT;
-	/* Set tap delay */
+	// Set tap delay
 	if (plat->tap_delay) {
 		vendor_ctrl &= ~(0xFF <<
 			SDHCI_VENDOR_CLOCK_CNTRL_TAP_VALUE_SHIFT);
@@ -184,7 +184,7 @@ static void tegra3_sdhci_post_reset_init(struct sdhci_host *sdhci)
 	}
 	sdhci_writel(sdhci, vendor_ctrl, SDHCI_VENDOR_CLOCK_CNTRL);
 
-	/* Enable SDHOST v3.0 support */
+	// Enable SDHOST v3.0 support
 	misc_ctrl = sdhci_readw(sdhci, SDHCI_VENDOR_MISC_CNTRL);
 	misc_ctrl |= SDHCI_VENDOR_MISC_CNTRL_SDMMC_SPARE0_ENABLE_SD_3_0;
 	sdhci_writew(sdhci, misc_ctrl, SDHCI_VENDOR_MISC_CNTRL);
