@@ -145,7 +145,7 @@ static struct tegra_otg_platform_data tegra_otg_pdata = {
 	.ehci_pdata = &tegra_ehci_pdata[0],
 }; 
 
-static void smba_usb_init(void)
+static void smba1002_usb_init(void)
 	{
         tegra_usb_phy_init(tegra_usb_phy_pdata, ARRAY_SIZE(tegra_usb_phy_pdata));
         /* OTG should be the first to be registered */
@@ -161,7 +161,7 @@ static void smba_usb_init(void)
 	platform_device_register(&tegra_ehci3_device);
 };
 
-int __init smba_usb_register_devices(void)
+int __init smba1002_usb_register_devices(void)
 {
 	smba1002_usb_init();
 	return 0;
