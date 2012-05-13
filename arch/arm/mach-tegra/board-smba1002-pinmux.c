@@ -222,8 +222,8 @@ static struct tegra_gpio_table gpio_table[] = {
 	{ .gpio = SMBA1002_USB0_VBUS,		.enable = true },
 	{ .gpio = SMBA1002_USB1_RESET,		.enable = true },
 	{ .gpio = SMBA1002_HP_DETECT,		.enable = true },
-        { .gpio = TEGRA_GPIO_ISL29023_IRQ,	.enable = true },
-	{ .gpio = TEGRA_GPIO_AC_PRESENT_IRQ,	.enable = true },
+    { .gpio = TEGRA_GPIO_ISL29023_IRQ,	.enable = true },
+	{ .gpio = SMBA1002_AC_PRESENT_IRQ,	.enable = true },
 };
 
 void __init smba1002_pinmux_init(void)
