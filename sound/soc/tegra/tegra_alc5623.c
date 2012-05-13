@@ -77,6 +77,18 @@
 #define GPIO_EXT_MIC_EN BIT(3)
 #define GPIO_HP_DET     BIT(4)
 
+#ifdef CONFIG_MACH_ADAM
+#define SMBA
+#endif
+
+#ifdef CONFIG_MACH_SMBA9701
+#define SMBA
+#endif
+
+#ifdef CONFIG_MACH_SMBA1002
+#define SMBA
+#endif
+
 /* possible audio sources */
 enum shuttle_audio_device {
 	ADAM_AUDIO_DEVICE_NONE	   = 0,		/* no device */
@@ -867,7 +879,7 @@ static int tegra_alc5623_event_int_mic(struct snd_soc_dapm_widget *w,
 
 
 
-#ifdef CONFIG_MACH_ADAM
+#ifdef SMBA
 static const struct snd_soc_dapm_widget dapm_widgets[] = {
 	SND_SOC_DAPM_PRE("Channel Swap Detect", tegra_alc5623_event_pre_channel),
 	SND_SOC_DAPM_SPK("Int Spk", tegra_alc5623_event_int_spk),
@@ -1186,3 +1198,4 @@ MODULE_AUTHOR("Jason Stern");
 MODULE_DESCRIPTION("Tegra+ALC5623 machine ASoC driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:" DRV_NAME);
+
