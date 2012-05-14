@@ -81,48 +81,27 @@ static __initdata struct tegra_clk_init_table smba1002_clk_init_table[] = {
 { "pll_p_out1", "pll_p", 28800000, true}, /* must be always on - audio clocks ...*/
 
 
-/* pll_a and pll_a_out0 are clock sources for audio interfaces */
-#ifdef ALC5623_IS_MASTER
-{ "pll_a", "pll_p_out1", 73728000, true}, /* always on - audio clocks */
-{ "pll_a_out0", "pll_a", 18432000, true}, /* always on - i2s audio */
+#ifdef SMBA1002_48KHZ_AUDIO
+	{ "pll_a",		"pll_p_out1",	 73728000,	true},		/* always on - audio clocks */
+	{ "pll_a_out0", 	"pll_a",	 18432000,	true},		/* always on - i2s audio */
+	{ "audio",		"pll_a_out0",	 12288000,	true},
+	{ "audio_2x",		"audio",	 24576000,	true},
+	{ "spdif_in",		"pll_p",	 36000000,	true},
+	{ "spdif_out",		"pll_a_out0",	  6144000,	true},
 #else
-# ifdef SMBA1002_48KHZ_AUDIO
-        { "pll_a", "pll_p_out1", 73728000, true}, /* always on - audio clocks */
-        { "pll_a_out0", "pll_a", 12288000, true}, /* always on - i2s audio */
-# else
-        { "pll_a", "pll_p_out1", 56448000, true}, /* always on - audio clocks */
-        { "pll_a_out0", "pll_a", 11289600, true}, /* always on - i2s audio */
-# endif
+	{ "pll_a",		"pll_p_out1",	 56448000,	true},		/* always on - audio clocks */
+	{ "pll_a_out0", 	"pll_a",	 11289600,	true},		/* always on - i2s audio */
+	{ "audio",		"pll_a_out0",	 11289600,	true},
+	{ "audio_2x",		"audio",	 22579200,	true},
+	{ "spdif_in",		"pll_p",	 36000000,	true},
+	{ "spdif_out",		"pll_a_out0",	  5644800,	true},
 #endif
 
 
-#ifdef ALC5623_IS_MASTER
-{ "i2s1", "clk_m", 12000000, true}, /* i2s.0 */
-{ "i2s2", "clk_m", 12000000, true}, /* i2s.1 */
-{ "audio", "i2s1", 12000000, true},
-{ "audio_2x", "audio", 24000000, true},
-{ "spdif_in", "pll_p", 36000000, true},
-{ "spdif_out", "pll_a_out0", 6144000, true},
-#else
-# ifdef SMBA1002_48KHZ_AUDIO
-        { "i2s1", "pll_a_out0", 12288000, true}, /* i2s.0 */
-        { "i2s2", "pll_a_out0", 12288000, true}, /* i2s.1 */
-        { "audio", "pll_a_out0", 12288000, true},
-        { "audio_2x", "audio", 24576000, true},
-        { "spdif_in", "pll_p", 36000000, true},
-        { "spdif_out", "pll_a_out0", 6144000, true},
-# else
-        { "i2s1", "pll_a_out0", 2822400, true}, /* i2s.0 */
-        { "i2s2", "pll_a_out0", 11289600, true}, /* i2s.1 */
-        { "audio", "pll_a_out0", 11289600, true},
-        { "audio_2x", "audio", 22579200, true},
-        { "spdif_in", "pll_p", 36000000, true},
-        { "spdif_out", "pll_a_out0", 5644800, true},
-# endif
-#endif
 
 /* cdev[1-2] take the configuration (clock parents) from the pinmux config,
 That is why we are setting it to NULL */
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)
 #define CDEV1 "cdev1"
 #define CDEV2 "cdev2"
@@ -130,13 +109,6 @@ That is why we are setting it to NULL */
 #define CDEV1 "clk_dev1"
 #define CDEV2 "clk_dev2"
 #endif
-# ifdef SMBA1002_48KHZ_AUDIO
-// { CDEV1, NULL /*"pll_a_out0"*/,12288000, false}, /* used as audio CODEC MCLK */
-        { CDEV1, NULL /*"pll_a_out0"*/,0, true}, /* used as audio CODEC MCLK */
-# else
-// { CDEV1, NULL /*"pll_a_out0"*/,11289600, false}, /* used as audio CODEC MCLK */
-        { CDEV1, NULL /*"pll_a_out0"*/,0, true}, /* used as audio CODEC MCLK */
-# endif
 
 { NULL, NULL, 0, 0},
 
