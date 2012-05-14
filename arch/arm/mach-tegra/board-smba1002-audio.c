@@ -146,7 +146,7 @@ static struct tegra_alc5623_platform_data smba1002_audio_pdata = {
         .gpio_hp_det            = SMBA1002_HP_DETECT,
 	.gpio_int_mic_en 	= SMBA1002_INT_MIC_EN,
 	.hifi_codec_datafmt = SND_SOC_DAIFMT_I2S,	/* HiFi codec data format */
-#ifdef ALC5623_IS_MASTER
+#ifdef ALC5624_IS_MASTER
 	.hifi_codec_master  = true,					/* If Hifi codec is master */
 #else
 	.hifi_codec_master  = false,				/* If Hifi codec is master */
@@ -156,10 +156,10 @@ static struct tegra_alc5623_platform_data smba1002_audio_pdata = {
 
 };
 
-static struct platform_device tegra_generic_codec = {
-	.name = "tegra-generic-codec",
-	.id   = -1,
-};
+//static struct platform_device tegra_generic_codec = {
+//	.name = "tegra-generic-codec",
+//	.id   = -1,
+//};
 
 static struct platform_device smba1002_audio_device = {
 	.name = "tegra-snd-alc5623",
@@ -177,7 +177,7 @@ static struct platform_device *smba1002_i2s_devices[] __initdata = {
 	&tegra_das_device,
 	&spdif_dit_device,
 	&tegra_pcm_device,
-	&tegra_generic_codec,
+//	&tegra_generic_codec,
 	&smba1002_audio_device, /* this must come last, as we need the DAS to be initialized to access the codec registers ! */
 };
 
@@ -200,3 +200,5 @@ int  __init smba1002_audio_register_devices(void)
 
         return platform_add_devices(smba1002_i2s_devices, ARRAY_SIZE(smba1002_i2s_devices));
 }
+
+
