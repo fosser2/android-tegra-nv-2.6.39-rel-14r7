@@ -179,11 +179,14 @@ static __initdata struct tegra_pingroup_config smba1002_pinmux[] = {
 static struct tegra_gpio_table gpio_table[] = {
 	{ .gpio = SMBA1002_BT_RESET,		.enable = true },
 	{ .gpio = SMBA1002_KEY_VOLUMEUP,	.enable = true },
+	#ifdef SMBA1002_GPS
+	{ .gpio = SMBA1002_GPSMAG_DISABLE, .enable = true },
+	#endif 
 	{ .gpio = SMBA1002_KEY_VOLUMEDOWN,	.enable = true },
 	{ .gpio = SMBA1002_KEY_POWER,		.enable = true },
 	//{ .gpio = SMBA1002_KEY_BACK,		.enable = true },
-	{ .gpio = SMBA1002_KEY_HOME,		.enable = true },
-	{ .gpio = SMBA1002_KEY_MENU,		.enable = true },
+	//{ .gpio = SMBA1002_KEY_HOME,		.enable = true },
+	//{ .gpio = SMBA1002_KEY_MENU,		.enable = true },
 	//{ .gpio = SMBA1002_CAMERA_POWER,	.enable = true },
 	{ .gpio = SMBA1002_NAND_WPN,		.enable = true },
 	{ .gpio = SMBA1002_BL_ENB,			.enable = true },

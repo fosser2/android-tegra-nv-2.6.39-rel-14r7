@@ -488,7 +488,7 @@ static int rtc_alarm_add_device(struct device *dev,
 	if (err)
 		goto err3;
 	alarm_rtc_dev = rtc;
-	pr_alarm(INIT_STATUS, "using rtc device, %s, for alarms", rtc->name);
+	pr_alarm(INIT_STATUS, "using rtc device, %s, for alarms\n", rtc->name);
 	mutex_unlock(&alarm_setrtc_mutex);
 
 	return 0;

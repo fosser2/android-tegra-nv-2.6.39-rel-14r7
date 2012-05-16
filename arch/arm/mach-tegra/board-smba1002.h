@@ -143,7 +143,7 @@ extern int smba1002_bt_wifi_gpio_init(void);
 extern void smba1002_wifi_set_cd(int val);
 
 extern void smba1002_init_emc(void);
-extern void smba1002_pinmux_init(void);
+extern int  smba1002_pinmux_init(void);
 extern void smba1002_clks_init(void);
 
 extern int smba1002_usb_register_devices(void);
