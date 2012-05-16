@@ -146,7 +146,7 @@ static struct tegra_alc5623_platform_data smba1002_audio_pdata = {
         .gpio_hp_det            = SMBA1002_HP_DETECT,
 	.gpio_int_mic_en 	= SMBA1002_INT_MIC_EN,
 	.hifi_codec_datafmt = SND_SOC_DAIFMT_I2S,	/* HiFi codec data format */
-#ifdef ALC5624_IS_MASTER
+#ifdef ALC5623_IS_MASTER
 	.hifi_codec_master  = true,					/* If Hifi codec is master */
 #else
 	.hifi_codec_master  = false,				/* If Hifi codec is master */

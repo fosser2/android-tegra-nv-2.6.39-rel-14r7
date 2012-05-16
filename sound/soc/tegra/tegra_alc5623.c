@@ -1123,7 +1123,7 @@ static __devinit int tegra_alc5623_driver_probe(struct platform_device *pdev)
 		goto err_unregister_switch;
 	}
 
-	dev_info(&pdev->dev, "Adam sound card registered\n");
+	dev_info(&pdev->dev, "Sound card registered\n");
 	
 	return 0;
 
