@@ -47,8 +47,8 @@
 static struct resource smba1002_bcm4329_rfkill_resources[] = {
 	{
 		.name   = "bcm4329_nreset_gpio",
-		.start  = SMBA1002_BT_RST,
-		.end    = SMBA1002_BT_RST,
+		.start  = SMBA1002_BT_RESET,
+		.end    = SMBA1002_BT_RESET,
 		.flags  = IORESOURCE_IO,
 	},
 };
@@ -65,10 +65,10 @@ void __init smba1002_bt_rfkill(void)
 	/*Add Clock Resource*/
 	int res = clk_add_alias("bcm4329_32k_clk", smba1002_bcm4329_rfkill_device.name, \
 				"blink", NULL);
-	printk("Initializing BT RFKILL, clk_add_alias: %d", res);
+	printk("Initializing BT RFKILL, clk_add_alias: %d \n", res);
 	res = platform_device_register(&smba1002_bcm4329_rfkill_device);
 	if (res)
-		printk("Error on BT RFKILL reg, result: %d", res);
+		printk("Error on BT RFKILL reg, result: %d \n", res);
 	return;
 }
 
@@ -90,13 +90,13 @@ void __init smba1002_setup_bluesleep(void)
 	}
 
 	res[0].name   = "gpio_host_wake";
-	res[0].start  = TEGRA_GPIO_PU5;
-	res[0].end    = TEGRA_GPIO_PU5;
+	res[0].start  = SMBA1002_BT_IRQ;
+	res[0].end    = SMBA1002_BT_IRQ;
 	res[0].flags  = IORESOURCE_IO;
 
-	res[1].name   = "bt_irq";
-	res[1].start  = gpio_to_irq(TEGRA_GPIO_PU6);
-	res[1].end    = gpio_to_irq(TEGRA_GPIO_PU6);
+	res[1].name   = "host_wake";
+	res[1].start  = gpio_to_irq(SMBA1002_BT_IRQ);
+	res[1].end    = gpio_to_irq(SMBA1002_BT_IRQ);
 	res[1].flags  = IORESOURCE_IRQ | IORESOURCE_IRQ_LOWEDGE;
 
 	if (platform_device_add_resources(pdev, res, 2)) {
@@ -109,9 +109,7 @@ void __init smba1002_setup_bluesleep(void)
 		goto err_free_res;
 	}
 
-	tegra_gpio_enable(TEGRA_GPIO_PU6);
-	gpio_request(TEGRA_GPIO_PU6, "bt_irq");
-	gpio_direction_input(TEGRA_GPIO_PU6);
+	tegra_gpio_enable(SMBA1002_BT_IRQ);
 
 	kfree(res);
 
