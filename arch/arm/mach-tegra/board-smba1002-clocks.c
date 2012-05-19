@@ -160,8 +160,6 @@ static __initdata struct tegra_clk_init_table smba_clk_init_table[] = {
 	{ "epp",		"pll_m",		0,	false}, 	/* tegra_grhost */	
 	{ "vi_sensor",		"pll_m",		0,	false},		/* tegra_camera */
 	{ "vi",			"pll_m",		0,	false},		/* tegra_camera */
-	{ "2d",			"pll_m",		0,	false},		/* tegra_grhost, gr2d */
-	{ "3d",			"pll_m",		0,	false},		/* tegra_grhost, gr3d */
 	{ "emc",		"pll_m",		0,	true},		/* always on */
 	{ "pll_m_out1",		"pll_m",		0,	true},		/* always on - unused ?*/
 
