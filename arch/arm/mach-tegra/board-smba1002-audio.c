@@ -91,7 +91,7 @@ static struct tegra_audio_platform_data tegra_audio_pdata[] = {
 		.i2s_clk_rate 	= 11289600,
 #endif
 		.dap_clk	  	= "cdev1",
-		.audio_sync_clk = "audio_2x",
+		.audio_sync_clk = "audio",
 		.mode			= I2S_BIT_FORMAT_I2S,
 		.fifo_fmt		= I2S_FIFO_PACKED,
 		.bit_size		= I2S_BIT_SIZE_16,
