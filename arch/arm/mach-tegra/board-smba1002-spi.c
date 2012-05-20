@@ -48,7 +48,7 @@ static struct platform_device *smba1002_spi_devices[] __initdata = {
 	&tegra_spi_device1,
 	&tegra_spi_device2,
 	&tegra_spi_device3,
-	&tegra_spi_device4,
+	//&tegra_spi_device4,
 };
 
 int __init smba1002_spi_register_devices(void)
