@@ -1091,11 +1091,11 @@ static __devinit int tegra_alc5623_driver_probe(struct platform_device *pdev)
 		machine->spk_reg = 0;
 //	}
 //
-	machine->dmic_reg = regulator_get(&pdev->dev, "vdd_dmic");
-	if (IS_ERR(machine->dmic_reg)) {
-		dev_info(&pdev->dev, "No digital mic regulator found\n");
-		machine->dmic_reg = 0;
-	}
+//	machine->dmic_reg = regulator_get(&pdev->dev, "vdd_dmic");
+//	if (IS_ERR(machine->dmic_reg)) {
+//		dev_info(&pdev->dev, "No digital mic regulator found\n");
+//		machine->dmic_reg = 0;
+//	}
 
 	machine->swap_channels = false;
 #ifdef CONFIG_SWITCH
