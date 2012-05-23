@@ -394,13 +394,13 @@ static struct fixed_voltage_config ldo_tps2051B_cfg
 
 /* FIXME: do we have rtc alarm irq? */
 static struct tps6586x_rtc_platform_data smba1002_rtc_data = {
-	.irq	= -1,
+	.irq  = -1, //we have no IRQ for RTC //TEGRA_NR_IRQS + TPS6586X_INT_RTC_ALM1,
         .start = {
 		.year = 2011,
 		.month = 12,
 		.day = 31,
         },
-	.cl_sel = TPS6586X_RTC_CL_SEL_1_5PF /* use lowest (external 20pF cap) */
+//	.cl_sel = TPS6586X_RTC_CL_SEL_1_5PF /* use lowest (external 20pF cap) */
 };
 
 static struct tps6586x_subdev_info tps_devs[] = {
