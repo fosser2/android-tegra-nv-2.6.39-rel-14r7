@@ -173,7 +173,8 @@ static struct regulator_consumer_supply tps658621_ldo6_supply[] = {
 */
 static struct regulator_consumer_supply tps658621_ldo7_supply[] = {
 	//REGULATOR_SUPPLY("vdd_ldo7", NULL),
-	REGULATOR_SUPPLY("avdd_hdmi", NULL)
+	REGULATOR_SUPPLY("avdd_hdmi", NULL),
+	REGULATOR_SUPPLY("vdd_fuse", NULL),
 };
 
 /* PLLHD voltage rail (HDMI) : AVDD_HDMI_PLL -> LDO8
