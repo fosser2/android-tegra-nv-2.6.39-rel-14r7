@@ -126,8 +126,8 @@ static struct alc5623_platform_data smba1002_alc5623_pdata = {
 
 	.mic1bias_mv		= 2475,	/* MIC1 bias voltage */
 	.mic2bias_mv		= 2475,	/* MIC2 bias voltage */
-	.mic1boost_db		= 30,	/* MIC1 gain boost */
-	.mic2boost_db		= 30,	/* MIC2 gain boost */
+	.mic1boost_db    	= 20,  /* MIC1 gain boost */
+	.mic2boost_db   	= 20,  /* MIC2 gain boost */
 
 	.default_is_mic2 	= false,	/* SMBA1002 uses MIC1 as the default capture source */
 
@@ -186,7 +186,7 @@ int  __init smba1002_audio_register_devices(void)
 {
 	int ret;
 
-        pr_info("%s++", __func__);
+        pr_info("%s++ \n", __func__);
 
 	/* Patch in the platform data */
 	tegra_i2s_device1.dev.platform_data = &tegra_audio_pdata[0];
