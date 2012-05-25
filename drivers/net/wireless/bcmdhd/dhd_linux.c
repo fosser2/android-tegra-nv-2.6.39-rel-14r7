@@ -4413,7 +4413,7 @@ int dhd_os_set_packet_filter(dhd_pub_t *dhdp, int val)
 		}
 	}
 	return ret;
-<<<<<<< HEAD
+
 
 }
 
