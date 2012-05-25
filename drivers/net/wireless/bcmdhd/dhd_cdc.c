@@ -311,7 +311,6 @@ dhd_prot_ioctl(dhd_pub_t *dhd, int ifidx, wl_ioctl_t * ioc, void * buf, int len)
 	prot->pending = TRUE;
 	prot->lastcmd = ioc->cmd;
 	action = ioc->set;
-
 	if (action & WL_IOCTL_ACTION_SET)
 		ret = dhdcdc_set_ioctl(dhd, ifidx, ioc->cmd, buf, len, action);
 	else {
@@ -328,7 +327,7 @@ dhd_prot_ioctl(dhd_pub_t *dhd, int ifidx, wl_ioctl_t * ioc, void * buf, int len)
 		ioc->needed = ltoh32(msg->len); /* len == needed when set/query fails from dongle */
 	}
 
-	/* Intercept th  wme_dp ioctl here */
+	/* Intercept the wme_dp ioctl here */
 	if ((!ret) && (ioc->cmd == WLC_SET_VAR) && (!strcmp(buf, "wme_dp"))) {
 		int slen, val = 0;
 

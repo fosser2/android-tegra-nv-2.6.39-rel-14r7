@@ -388,9 +388,12 @@ onretry:
 		sdioh_start(NULL, 0);
 		ret = dhd_dev_reset(dev, FALSE);
 		sdioh_start(NULL, 1);
-		if (!ret)
-			ret = dhd_dev_init_ioctl_ret(dev);
+		if (!ret) {
+			if (dhd_dev_init_ioctl(dev) < 0)
+				ret = -EFAULT;
+		}
 		g_wifi_on = 1;
+
 	}
 	dhd_net_if_unlock(dev);
 ////////////////////////////////// Adam Patch /////////////////////////////////////
